@@ -1,13 +1,23 @@
+import type { ReactNode } from 'react'
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { getToken } from './utils/auth'
 import { useAuthDispatch, useAuthState } from '~/context/AuthContext'
-import Home from '~/pages/home'
-import Login from '~/pages/login'
-import UserInfo from '~/pages/userInfo'
 import type { ProtectedRouteProps } from '~/components/ProtectedRoute'
-import ProtectedRoute from '~/components/ProtectedRoute'
-import Page404 from '~/layouts/404'
 
+import ProtectedRoute from '~/components/ProtectedRoute'
+const Home = lazy(() => import('~/pages/home'))
+const Login = lazy(() => import('~/pages/login'))
+const UserInfo = lazy(() => import('~/pages/userInfo'))
+const Page404 = lazy(() => import('~/layouts/404'))
+interface LazyLoadProps {
+  children: ReactNode
+  fallback?: ReactNode
+}
+
+const LazyLoad = ({ children, fallback = <div>Loading...</div> }: LazyLoadProps) => (
+  <Suspense fallback={fallback}>{children}</Suspense>
+)
 interface routeType {
   path: string
   element: JSX.Element
@@ -17,27 +27,27 @@ interface routeType {
 const routes: routeType[] = [
   {
     path: '/',
-    element: <Home />,
+    element: <LazyLoad><Home /></LazyLoad>,
     isProtectedRoute: true,
   },
   {
     path: '/:username',
-    element: <Home />,
+    element: <LazyLoad><Home /></LazyLoad>,
     isProtectedRoute: true,
   },
   {
     path: 'userinfo',
-    element: <UserInfo />,
+    element: <LazyLoad><UserInfo /></LazyLoad>,
     isProtectedRoute: true,
   },
   {
     path: 'login',
-    element: <Login />,
+    element: <LazyLoad><Login /></LazyLoad>,
     isProtectedRoute: false,
   },
   {
     path: '*',
-    element: <Page404 />,
+    element: <LazyLoad><Page404 /></LazyLoad>,
     isProtectedRoute: false,
   },
 ]
@@ -63,11 +73,6 @@ const APP = () => {
     <div>
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<ProtectedRoute {...defaultProtectedRouteProps} outlet={<Home />} />} />
-          <Route path="/:username" element={<ProtectedRoute {...defaultProtectedRouteProps} outlet={<Home />} />} />
-          <Route path="userinfo" element={<ProtectedRoute {...defaultProtectedRouteProps} outlet={<UserInfo />} />} />
-          <Route path="login" element={<Login />} />
-          <Route path="*" element={<Page404 />} /> */}
           {routes.map(r => (
             <Route path={r.path} element={r.isProtectedRoute ? <ProtectedRoute {...defaultProtectedRouteProps} outlet={r.element} /> : r.element} key={r.path} />
           ))}
