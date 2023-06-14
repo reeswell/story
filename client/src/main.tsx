@@ -1,19 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './APP'
-import SearchContextProvider from '~/context/SearchContext'
+import SearchProvider from '~/context/SearchContext'
 import AuthProvider from '~/context/AuthContext'
-import RelationshipContext from '~/context/RelationshipContext'
+import RelationshipProvider from '~/context/RelationshipContext'
 import '~/styles/index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
-      <RelationshipContext>
-        <SearchContextProvider>
+      <RelationshipProvider>
+        <SearchProvider>
           <App />
-        </SearchContextProvider>
-      </RelationshipContext>
+        </SearchProvider>
+      </RelationshipProvider>
     </AuthProvider>
   </React.StrictMode>,
 )
